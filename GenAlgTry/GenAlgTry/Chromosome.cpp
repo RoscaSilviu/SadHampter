@@ -13,11 +13,11 @@ Chromosome::Chromosome(const double XleftBoundary, const double XrightBoundary,
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0, 1);
 
-	for (auto& gene : m_x)
+	for (bool gene : m_x)
 	{
 		gene = dis(gen) > 0.5;
 	}
-	for (auto& gene : m_y)
+	for (bool gene : m_y)
 	{
 		gene = dis(gen) > 0.5;
 	}
@@ -30,14 +30,14 @@ void Chromosome::Mutation()
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0, 1);
 
-	for(auto& gene : m_x)
+	for(bool gene : m_x)
 	{
 		if(dis(gen) < kMutationProbability)
 		{
 			gene = !gene;
 		}
 	}
-	for(auto& gene : m_y)
+	for(bool gene : m_y)
 	{
 		if(dis(gen) < kMutationProbability)
 		{
@@ -55,12 +55,12 @@ void Chromosome::Fitness()
 	m_fitness = result;
 }
 
-std::array<bool, Chromosome::kDimension> Chromosome::GetX() const
+std::vector<bool> Chromosome::GetX() const
 {
 	return m_x;
 }
 
-std::array<bool, Chromosome::kDimension> Chromosome::GetY() const
+std::vector<bool> Chromosome::GetY() const
 {
 	return m_y;
 }
@@ -80,12 +80,12 @@ double Chromosome::GetFitness() const
 	return m_fitness; 
 }
 
-void Chromosome::SetX(const std::array<bool, kDimension>&x)
+void Chromosome::SetX(const std::vector<bool>&x)
 {
 	m_x = x;
 }
 
-void Chromosome::SetY(const std::array<bool, kDimension>& y)
+void Chromosome::SetY(const std::vector<bool>& y)
 {
 	m_y = y;
 }
@@ -95,7 +95,7 @@ bool Chromosome::operator<(const Chromosome& other) const
 	return m_fitness < other.m_fitness;
 }
 
-double Chromosome::DecodeGene(const std::array<bool, kDimension>& gene, bool isX) const
+double Chromosome::DecodeGene(const std::vector<bool>& gene, bool isX) const
 {
 	const auto v = GetV(gene);
 	if(isX)
@@ -105,7 +105,7 @@ double Chromosome::DecodeGene(const std::array<bool, kDimension>& gene, bool isX
 	return m_YleftBoundary + v * (m_YrightBoundary - m_YleftBoundary) / (pow(2, kDimension) - 1);
 }
 
-int Chromosome::GetV(const std::array<bool, kDimension>& gene)
+int Chromosome::GetV(const std::vector<bool>& gene)
 {
 	int result = 0.0;
 	int index = 0;

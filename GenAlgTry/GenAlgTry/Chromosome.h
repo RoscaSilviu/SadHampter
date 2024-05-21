@@ -1,5 +1,6 @@
 #pragma once
-#include <array>
+#include <vector>
+
 class Chromosome
 {
 public:
@@ -12,25 +13,26 @@ public:
 		const double YleftBoundary, const double yrightBoundary);
 
 	void Mutation();
-	std::array<bool, kDimension> GetX() const;
-	std::array<bool, kDimension> GetY() const;
+	std::vector<bool> GetX() const;
+	std::vector<bool> GetY() const;
 	double GetXPhenotype() const;
 	double GetYPhenotype() const;
 	double GetFitness() const;
 
-	void SetX(const std::array<bool, kDimension>& x);
-	void SetY(const std::array<bool, kDimension>& y);
+	void SetX(const std::vector<bool>& x);
+	void SetY(const std::vector<bool>& y);
 
 public:
 	bool operator<(const Chromosome& other) const;
 
 private:
 	void Fitness();
-	double DecodeGene(const std::array<bool, kDimension>& gene, bool isX) const;
-	static int GetV(const std::array<bool, kDimension>& gene);
+	double DecodeGene(const std::vector<bool>& gene, bool isX) const;
+	static int GetV(const std::vector<bool>& gene);
 private:
-	std::array<bool, kDimension> m_x;
-	std::array<bool, kDimension> m_y;
+
+	std::vector<bool> m_x;
+	std::vector<bool> m_y;
 	double m_fitness;
 
 	double m_XleftBoundary;

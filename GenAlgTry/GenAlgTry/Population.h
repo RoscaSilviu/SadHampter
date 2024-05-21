@@ -21,9 +21,8 @@ private:
 	Chromosome GetChromosomeByProbability(double probability) const;
 	void CalculateCumulativeProbability();
 
-	//std::array<Chromosome, kDimension> m_population;
-	std::array<Chromosome, kPopulationDimension> m_population;
-	std::array<double, kPopulationDimension> m_relativeFitness;
+	std::vector<Chromosome> m_population;
+	std::vector<double> m_relativeFitness;
 	std::set<std::pair<Chromosome, double>> m_cumulativeProbability;
 	std::set<std::pair<Chromosome, Chromosome>> m_selected;
 	
