@@ -36,11 +36,16 @@ void Population::Selection()
 		double random = dis(gen);
 		double random2 = dis(gen);
 		double randValue = dis(gen);
+
 		if (randValue < kPC)
 		{
-			auto individuals = std::make_pair(GetChromosomeByProbability(random), GetChromosomeByProbability(random2));
-			m_selected.insert(individuals);
+			auto firstIndividual = GetChromosomeByProbability(random);
+			auto secondIndividual = GetChromosomeByProbability(random2);
 			
+			m_selected.insert(std::make_pair(firstIndividual, secondIndividual));
+
+			EraseIndividual(firstIndividual);
+			EraseIndividual(secondIndividual);
 		}
 	}
 }
@@ -71,6 +76,15 @@ void Population::CalculateCumulativeProbability()
 		m_relativeFitness[i] = cumulativeProbability + m_population[i].GetFitness() / totalFitness;
 		m_cumulativeProbability.insert(std::make_pair(m_population[i], m_relativeFitness[i]));
 		cumulativeProbability += m_relativeFitness[i];
+	}
+}
+
+void Population::EraseIndividual(const Chromosome& individual)
+{
+	auto it = std::find(m_population.begin(), m_population.end(), individual);
+	if (it != m_population.end())
+	{
+		m_population.erase(it);
 	}
 }
 
@@ -116,4 +130,14 @@ std::set<std::pair<Chromosome, Chromosome>> Population::Crossover()
 		offsprings.insert(std::make_pair(firstOffspring, secondOffSpring));		
 	}
 	return offsprings;
+}
+
+void Population::Repopulate()
+{
+	auto offsprings = Crossover();
+	for (const auto& offspring : offsprings)
+	{
+		m_population.push_back(offspring.first);
+		m_population.push_back(offspring.second);
+	}
 }

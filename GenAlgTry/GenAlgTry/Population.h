@@ -20,6 +20,7 @@ private:
 	//binary search on set
 	Chromosome GetChromosomeByProbability(double probability) const;
 	void CalculateCumulativeProbability();
+	void EraseIndividual(const Chromosome& individual);
 
 	std::vector<Chromosome> m_population;
 	std::vector<double> m_relativeFitness;

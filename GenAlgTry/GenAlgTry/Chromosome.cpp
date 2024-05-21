@@ -95,6 +95,13 @@ bool Chromosome::operator<(const Chromosome& other) const
 	return m_fitness < other.m_fitness;
 }
 
+bool Chromosome::operator==(const Chromosome& other) const
+{
+	return this->m_fitness == other.m_fitness &&
+		this->m_x == other.m_x &&
+		this->m_y == other.m_y;
+}
+
 double Chromosome::DecodeGene(const std::vector<bool>& gene, bool isX) const
 {
 	const auto v = GetV(gene);

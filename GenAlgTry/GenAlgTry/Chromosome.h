@@ -24,6 +24,7 @@ public:
 
 public:
 	bool operator<(const Chromosome& other) const;
+	bool operator==(const Chromosome& other) const;
 
 private:
 	void Fitness();
