@@ -88,17 +88,30 @@ void Population::EraseIndividual(const Chromosome& individual)
 	}
 }
 
+std::vector<bool> Population::CombineGenes(const Chromosome& ch) // combine x and y genes into a single array
+{
+	std::vector<bool> gene;
+	std::copy(ch.GetX().begin(), ch.GetX().end(), gene.begin());
+	std::copy(ch.GetY().begin(), ch.GetY().end(), gene.begin() + Chromosome::kDimension);
+	return gene;
+}
+
+std::pair<std::vector<bool>, std::vector<bool>> Population::SplitGene(const std::vector<bool>& gene) // split the gene back into x and y
+{
+	std::pair<std::vector<bool>, std::vector<bool>> genes;
+	std::copy(gene.begin(), gene.begin() + Chromosome::kDimension, genes.first.begin());
+	std::copy(gene.begin() + Chromosome::kDimension, gene.end(), genes.second.begin());
+	return genes;
+}
+
 std::set<std::pair<Chromosome, Chromosome>> Population::Crossover()
 {
 	std::set<std::pair<Chromosome, Chromosome>> offsprings;
 
 	for (const auto& parents : m_selected)
 	{
-		std::vector<bool> firstParentGene, secondParentGene; // combine x and y genes into a single array
-		std::copy(parents.first.GetX().begin(), parents.first.GetX().end(), firstParentGene.begin());
-		std::copy(parents.first.GetY().begin(), parents.first.GetY().end(), firstParentGene.begin() + Chromosome::kDimension);
-		std::copy(parents.second.GetX().begin(), parents.second.GetX().end(), secondParentGene.begin());
-		std::copy(parents.second.GetY().begin(), parents.second.GetY().end(), secondParentGene.begin() + Chromosome::kDimension);
+		std::vector<bool> firstParentGene = CombineGenes(parents.first);
+		std::vector<bool> secondParentGene = CombineGenes(parents.second);
 
 		std::random_device rd;
 		std::mt19937 gen(rd());
@@ -122,10 +135,10 @@ std::set<std::pair<Chromosome, Chromosome>> Population::Crossover()
 		}
 
 		Chromosome firstOffspring, secondOffSpring;
-		std::copy(firstOffspringGene.begin(), firstOffspringGene.begin() + Chromosome::kDimension, firstOffspring.GetX().begin());
-		std::copy(firstOffspringGene.begin() + Chromosome::kDimension, firstOffspringGene.end(), firstOffspring.GetY().begin());
-		std::copy(secondOffspringGene.begin(), secondOffspringGene.begin() + Chromosome::kDimension, secondOffSpring.GetX().begin());
-		std::copy(secondOffspringGene.begin() + Chromosome::kDimension, secondOffspringGene.end(), secondOffSpring.GetY().begin());
+		firstOffspring.SetX(SplitGene(firstOffspringGene).first);
+		firstOffspring.SetY(SplitGene(firstOffspringGene).second);
+		secondOffSpring.SetX(SplitGene(secondOffspringGene).first);
+		secondOffSpring.SetY(SplitGene(secondOffspringGene).second);
 
 		offsprings.insert(std::make_pair(firstOffspring, secondOffSpring));		
 	}

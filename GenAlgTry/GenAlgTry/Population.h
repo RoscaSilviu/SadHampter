@@ -21,6 +21,8 @@ private:
 	Chromosome GetChromosomeByProbability(double probability) const;
 	void CalculateCumulativeProbability();
 	void EraseIndividual(const Chromosome& individual);
+	std::vector<bool> CombineGenes(const Chromosome& ch);
+	std::pair< std::vector<bool>,std::vector<bool>> SplitGene(const std::vector<bool>& gene);
 
 	std::vector<Chromosome> m_population;
 	std::vector<double> m_relativeFitness;
