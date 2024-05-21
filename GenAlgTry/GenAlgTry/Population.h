@@ -4,12 +4,13 @@
 class Population
 {
 public:
+	static constexpr int kDimension = 100;
+public:
 	Population();
 	void Selection();
 	void Crossover();
 
 private:
-	static constexpr int kDimension = 100;
 
 	std::array<Chromosome, kDimension> m_population;
 
