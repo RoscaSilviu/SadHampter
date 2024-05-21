@@ -6,13 +6,14 @@
 class Population
 {
 public:
-	static constexpr int kDimension = 10;
+	static constexpr int kPopulationDimension = 100;
+	static constexpr double kPC = 0.613;
 public:
 	Population();
 	Population(const int startX, const int startY, const int endX, const int endY);
 
 	void Selection();
-	void Crossover();
+	std::set<std::pair<Chromosome, Chromosome>> Crossover(); // returns offsprings
 	void Repopulate();
 
 private:
@@ -21,8 +22,8 @@ private:
 	void CalculateCumulativeProbability();
 
 	//std::array<Chromosome, kDimension> m_population;
-	std::array<Chromosome, kDimension> m_population;
-	std::array<double, kDimension> m_relativeFitness;
+	std::array<Chromosome, kPopulationDimension> m_population;
+	std::array<double, kPopulationDimension> m_relativeFitness;
 	std::set<std::pair<Chromosome, double>> m_cumulativeProbability;
 	std::set<std::pair<Chromosome, Chromosome>> m_selected;
 	

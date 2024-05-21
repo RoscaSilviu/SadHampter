@@ -3,7 +3,7 @@
 
 Population::Population()
 {
-	for (int i = 0; i < kDimension; ++i)
+	for (int i = 0; i < kPopulationDimension; ++i)
 	{
 		m_population[i] = Chromosome(m_startX, m_endX, m_startY, m_endY);
 	}
@@ -17,7 +17,7 @@ Population::Population(const int startX, const int startY, const int endX, const
 	, m_endX(endX)
 	, m_endY(endY)
 {
-	for (int i = 0; i < kDimension; ++i)
+	for (int i = 0; i < kPopulationDimension; ++i)
 	{
 		m_population[i] = Chromosome(m_startX, m_endX, m_startY, m_endY);
 	}
@@ -28,14 +28,20 @@ Population::Population(const int startX, const int startY, const int endX, const
 void Population::Selection()
 {
 	CalculateCumulativeProbability();
-	for (int i = 0; i < kDimension; ++i)
+	for (int i = 0; i < kPopulationDimension / 2; ++i)
 	{
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<double> dis(0, 1);
 		double random = dis(gen);
 		double random2 = dis(gen);
-		m_selected.insert(std::make_pair(GetChromosomeByProbability(random), GetChromosomeByProbability(random2)));
+		double randValue = dis(gen);
+		if (randValue < kPC)
+		{
+			auto individuals = std::make_pair(GetChromosomeByProbability(random), GetChromosomeByProbability(random2));
+			m_selected.insert(individuals);
+			
+		}
 	}
 }
 
@@ -60,10 +66,54 @@ void Population::CalculateCumulativeProbability()
 	}
 
 	m_cumulativeProbability.clear();
-	for (int i = 0; i < kDimension; ++i)
+	for (int i = 0; i < kPopulationDimension; ++i)
 	{
 		m_relativeFitness[i] = cumulativeProbability + m_population[i].GetFitness() / totalFitness;
 		m_cumulativeProbability.insert(std::make_pair(m_population[i], m_relativeFitness[i]));
 		cumulativeProbability += m_relativeFitness[i];
 	}
+}
+
+std::set<std::pair<Chromosome, Chromosome>> Population::Crossover()
+{
+	std::set<std::pair<Chromosome, Chromosome>> offsprings;
+
+	for (const auto& parents : m_selected)
+	{
+		std::array<bool, parents.first.kDimension * 2> firstParentGene, secondParentGene; // combine x and y genes into a single array
+		std::copy(parents.first.GetX().begin(), parents.first.GetX().end(), firstParentGene.begin());
+		std::copy(parents.first.GetY().begin(), parents.first.GetY().end(), firstParentGene.begin() + parents.first.kDimension);
+		std::copy(parents.second.GetX().begin(), parents.second.GetX().end(), secondParentGene.begin());
+		std::copy(parents.second.GetY().begin(), parents.second.GetY().end(), secondParentGene.begin() + parents.first.kDimension);
+
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(1, parents.first.GetX().size() - 1); // doesn't choose the first or last position of the gene
+		int randIndex = dis(gen);
+
+		std::array<bool, parents.first.kDimension * 2> firstOffspringGene, secondOffspringGene;
+
+		for (int i = 0; i < parents.first.kDimension * 2; i++)
+		{
+			if (i < randIndex)
+			{
+				firstOffspringGene[i] = firstParentGene[i];
+				secondOffspringGene[i] = secondParentGene[i];
+			}
+			else
+			{
+				firstOffspringGene[i] = secondParentGene[i];
+				secondOffspringGene[i] = firstParentGene[i];
+			}
+		}
+
+		Chromosome firstOffspring, secondOffSpring;
+		std::copy(firstOffspringGene.begin(), firstOffspringGene.begin() + parents.first.kDimension, firstOffspring.GetX().begin());
+		std::copy(firstOffspringGene.begin() + parents.first.kDimension, firstOffspringGene.end(), firstOffspring.GetY().begin());
+		std::copy(secondOffspringGene.begin(), secondOffspringGene.begin() + parents.first.kDimension, secondOffSpring.GetX().begin());
+		std::copy(secondOffspringGene.begin() + parents.first.kDimension, secondOffspringGene.end(), secondOffSpring.GetY().begin());
+
+		offsprings.insert(std::make_pair(firstOffspring, secondOffSpring));		
+	}
+	return offsprings;
 }

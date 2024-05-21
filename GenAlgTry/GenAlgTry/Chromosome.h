@@ -18,6 +18,9 @@ public:
 	double GetYPhenotype() const;
 	double GetFitness() const;
 
+	void SetX(const std::array<bool, kDimension>& x);
+	void SetY(const std::array<bool, kDimension>& y);
+
 public:
 	bool operator<(const Chromosome& other) const;
 

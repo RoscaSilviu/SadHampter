@@ -76,7 +76,19 @@ double Chromosome::GetYPhenotype() const
 }
 
 double Chromosome::GetFitness() const
-{ return m_fitness; }
+{ 
+	return m_fitness; 
+}
+
+void Chromosome::SetX(const std::array<bool, kDimension>&x)
+{
+	m_x = x;
+}
+
+void Chromosome::SetY(const std::array<bool, kDimension>& y)
+{
+	m_y = y;
+}
 
 bool Chromosome::operator<(const Chromosome& other) const
 {
