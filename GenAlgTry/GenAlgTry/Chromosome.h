@@ -7,7 +7,10 @@ public:
 	static constexpr double kMutationProbability { 0.001 };
 
 public:
-	Chromosome(const double leftBoundary, const double rightBoundary);
+	Chromosome() = default;
+	Chromosome(const double XleftBoundary, const double XrightBoundary, 
+		const double YleftBoundary, const double yrightBoundary);
+
 	void Mutation();
 	std::array<bool, kDimension> GetX() const;
 	std::array<bool, kDimension> GetY() const;
@@ -20,13 +23,16 @@ public:
 
 private:
 	void Fitness();
-	double DecodeGene(const std::array<bool, kDimension>& gene) const;
+	double DecodeGene(const std::array<bool, kDimension>& gene, bool isX) const;
 	static int GetV(const std::array<bool, kDimension>& gene);
 private:
 	std::array<bool, kDimension> m_x;
 	std::array<bool, kDimension> m_y;
 	double m_fitness;
-	double m_leftBoundary;
-	double m_rightBoundary;
+
+	double m_XleftBoundary;
+	double m_XrightBoundary;
+	double m_YleftBoundary;
+	double m_YrightBoundary;
 };
 
