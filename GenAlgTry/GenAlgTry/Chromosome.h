@@ -9,13 +9,17 @@ public:
 public:
 	Chromosome(const double leftBoundary, const double rightBoundary);
 	void Mutation();
-	double Fitness(); //return and modify the fitness of the chromosome
 	std::array<bool, kDimension> GetX() const;
 	std::array<bool, kDimension> GetY() const;
 	double GetXPhenotype() const;
 	double GetYPhenotype() const;
+	double GetFitness() const;
+
+public:
+	bool operator<(const Chromosome& other) const;
 
 private:
+	void Fitness();
 	double DecodeGene(const std::array<bool, kDimension>& gene) const;
 	static int GetV(const std::array<bool, kDimension>& gene);
 private:

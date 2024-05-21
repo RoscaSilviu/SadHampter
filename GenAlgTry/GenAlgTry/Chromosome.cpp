@@ -44,14 +44,13 @@ void Chromosome::Mutation()
 	}
 }
 
-double Chromosome::Fitness()
+void Chromosome::Fitness()
 {
 	const auto x = DecodeGene(m_x);
 	const auto y = DecodeGene(m_y);
 	const double result = 3+abs(log(sin(x) * 5 + 3)+tan(y));
 
 	m_fitness = result;
-	return result;
 }
 
 std::array<bool, Chromosome::kDimension> Chromosome::GetX() const
@@ -72,6 +71,14 @@ double Chromosome::GetXPhenotype() const
 double Chromosome::GetYPhenotype() const
 {
 	return DecodeGene(m_y);
+}
+
+double Chromosome::GetFitness() const
+{ return m_fitness; }
+
+bool Chromosome::operator<(const Chromosome& other) const
+{
+	return m_fitness < other.m_fitness;
 }
 
 double Chromosome::DecodeGene(const std::array<bool, kDimension>& gene) const
