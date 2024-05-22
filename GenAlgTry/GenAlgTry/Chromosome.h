@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 class Chromosome
 {
@@ -18,6 +19,8 @@ public:
 	double GetXPhenotype() const;
 	double GetYPhenotype() const;
 	double GetFitness() const;
+
+	std::string GetChromosome();
 
 	void SetX(const std::vector<bool>& x);
 	void SetY(const std::vector<bool>& y);

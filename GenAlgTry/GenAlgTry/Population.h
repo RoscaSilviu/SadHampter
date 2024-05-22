@@ -13,8 +13,13 @@ public:
 	Population(const int startX, const int startY, const int endX, const int endY);
 
 	void Selection();
-	std::set<std::pair<Chromosome, Chromosome>> Crossover(); // returns offsprings
+	std::vector<std::pair<Chromosome, Chromosome>> Crossover(); // returns offsprings
 	void Repopulate();
+	void ShowPopulation() const;
+
+	//friend std::ostream& operator<<(std::ostream& os, const Population& p);
+	friend std::ostream& operator<<(std::ostream& os, const Population& p);
+
 
 private:
 	//binary search on set
@@ -26,9 +31,9 @@ private:
 
 	std::vector<Chromosome> m_population;
 	std::vector<double> m_relativeFitness;
-	std::set<std::pair<Chromosome, double>> m_cumulativeProbability;
-	std::set<std::pair<Chromosome, Chromosome>> m_selected;
-	
+	std::vector<std::pair<Chromosome, double>> m_cumulativeProbability;
+	std::vector<Chromosome> m_selectedPopulation;
+	std::vector<std::pair<Chromosome, Chromosome>> m_selected;
 
 	int m_startX;
 	int m_startY;

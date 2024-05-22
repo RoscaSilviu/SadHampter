@@ -3,15 +3,17 @@
 #include <random>
 
 Chromosome::Chromosome(const double XleftBoundary, const double XrightBoundary,
-	const double YleftBoundary, const double yrightBoundary):
-	m_XleftBoundary(XleftBoundary)
-	, m_XrightBoundary(XrightBoundary)
-	, m_YleftBoundary(YleftBoundary)
-	, m_YrightBoundary(yrightBoundary)
+	const double YleftBoundary, const double yrightBoundary) :
+	m_XleftBoundary{ XleftBoundary }
+	, m_XrightBoundary{ XrightBoundary }
+	, m_YleftBoundary{ YleftBoundary }
+	, m_YrightBoundary{ yrightBoundary }
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0, 1);
+	m_x = std::vector<bool>(kDimension);	
+	m_y = std::vector<bool>(kDimension);
 
 	for (bool gene : m_x)
 	{
@@ -30,16 +32,16 @@ void Chromosome::Mutation()
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0, 1);
 
-	for(bool gene : m_x)
+	for (bool gene : m_x)
 	{
-		if(dis(gen) < kMutationProbability)
+		if (dis(gen) < kMutationProbability)
 		{
 			gene = !gene;
 		}
 	}
-	for(bool gene : m_y)
+	for (bool gene : m_y)
 	{
-		if(dis(gen) < kMutationProbability)
+		if (dis(gen) < kMutationProbability)
 		{
 			gene = !gene;
 		}
@@ -50,7 +52,7 @@ void Chromosome::Fitness()
 {
 	const auto x = GetXPhenotype();
 	const auto y = GetYPhenotype();
-	const double result = 3+abs(log(sin(x) * 5 + 3)+tan(y));
+	const double result = 3 + abs(log(sin(x) * 5 + 3) + tan(y));
 
 	m_fitness = result;
 }
@@ -76,11 +78,25 @@ double Chromosome::GetYPhenotype() const
 }
 
 double Chromosome::GetFitness() const
-{ 
-	return m_fitness; 
+{
+	return m_fitness;
 }
 
-void Chromosome::SetX(const std::vector<bool>&x)
+std::string Chromosome::GetChromosome() 
+{
+	std::string result;
+	for (auto gene : m_x)
+	{
+		result += gene ? "1" : "0";
+	}
+	for (auto gene : m_y)
+	{
+		result += gene ? "1" : "0";
+	}
+	return result;
+}
+
+void Chromosome::SetX(const std::vector<bool>& x)
 {
 	m_x = x;
 }
@@ -105,7 +121,7 @@ bool Chromosome::operator==(const Chromosome& other) const
 double Chromosome::DecodeGene(const std::vector<bool>& gene, bool isX) const
 {
 	const auto v = GetV(gene);
-	if(isX)
+	if (isX)
 	{
 		return m_XleftBoundary + v * (m_XrightBoundary - m_XleftBoundary) / (pow(2, kDimension) - 1);
 	}
