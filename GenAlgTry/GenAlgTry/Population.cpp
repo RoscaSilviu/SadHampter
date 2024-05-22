@@ -6,7 +6,7 @@ Population::Population()
 {
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
-		m_population.emplace_back(Chromosome(m_startX, m_endX, m_startY, m_endY));
+		m_population.emplace_back(m_startX, m_endX, m_startY, m_endY);
 	}
 
 	Selection();
@@ -22,9 +22,8 @@ Population::Population(const int startX, const int startY, const int endX, const
 
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
-		m_population.emplace_back(Chromosome(m_startX, m_endX, m_startY, m_endY));
+		m_population.emplace_back(m_startX, m_endX, m_startY, m_endY);
 	}
-	int a = 0;
 	//Selection();
 }
 
@@ -38,11 +37,10 @@ void Population::Selection()
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<double> dis(0, 1);
-		double random = dis(gen);
-		double random2 = dis(gen);
-		double randValue = dis(gen);
+		const double random = dis(gen);
+		const double random2 = dis(gen);
 
-		if (randValue < kPC)
+		if (dis(gen) < kPC)
 		{
 			auto firstIndividual = GetChromosomeByProbability(random);
 			auto secondIndividual = GetChromosomeByProbability(random2);
@@ -52,7 +50,7 @@ void Population::Selection()
 				//throw std::runtime_error("The size of the gene is not equal to the dimension of the chromosome");
 			}
 			
-			m_selected.emplace_back(std::make_pair(firstIndividual, secondIndividual));
+			m_selected.emplace_back(firstIndividual, secondIndividual);
 			m_selectedPopulation.emplace_back(firstIndividual);
 			m_selectedPopulation.emplace_back(secondIndividual);
 
@@ -62,7 +60,7 @@ void Population::Selection()
 	}
 }
 
-Chromosome Population::GetChromosomeByProbability(double probability) const
+Chromosome Population::GetChromosomeByProbability(const double probability) const
 {
 	for (const auto& chromosome : m_cumulativeProbability)
 	{
@@ -87,14 +85,14 @@ void Population::CalculateCumulativeProbability()
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
 		m_relativeFitness[i] = cumulativeProbability + m_population[i].GetFitness() / totalFitness;
-		m_cumulativeProbability.emplace_back(std::make_pair(m_population[i], m_relativeFitness[i]));
+		m_cumulativeProbability.emplace_back(m_population[i], m_relativeFitness[i]);
 		cumulativeProbability += m_relativeFitness[i];
 	}
 }
 
 void Population::EraseIndividual(const Chromosome& individual)
 {
-	auto it = std::find(m_population.begin(), m_population.end(), individual);
+	const auto it = std::ranges::find(m_population, individual);
 	if (it != m_population.end())
 	{
 		m_population.erase(it);

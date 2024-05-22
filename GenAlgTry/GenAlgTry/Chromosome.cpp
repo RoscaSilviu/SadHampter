@@ -1,28 +1,28 @@
 #include "Chromosome.h"
 #include <cmath>
+#include <iostream>
 #include <random>
 
-Chromosome::Chromosome(const double XleftBoundary, const double XrightBoundary,
-	const double YleftBoundary, const double yrightBoundary) :
-	m_XleftBoundary{ XleftBoundary }
-	, m_XrightBoundary{ XrightBoundary }
-	, m_YleftBoundary{ YleftBoundary }
-	, m_YrightBoundary{ yrightBoundary }
+Chromosome::Chromosome(const double xLeftBoundary, const double xRightBoundary,
+	const double yLeftBoundary, const double yRightBoundary) :
+	m_xLeftBoundary{ xLeftBoundary }
+	, m_xRightBoundary{ xRightBoundary }
+	, m_yLeftBoundary{ yLeftBoundary }
+	, m_yRightBoundary{ yRightBoundary }
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<double> dis(0, 1);
+	std::uniform_real_distribution<> dis(0.0, 1.0);
 	m_x = std::vector<bool>(kDimension);	
 	m_y = std::vector<bool>(kDimension);
 
-	for (bool gene : m_x)
+	for(int index =0; index < kDimension; ++index)
 	{
-		gene = dis(gen) > 0.5;
+		m_x[index] = dis(gen) > 0.5;
+		m_y[index] = dis(gen) > 0.5;
 	}
-	for (bool gene : m_y)
-	{
-		gene = dis(gen) > 0.5;
-	}
+
+	Fitness();
 	Fitness();
 }
 
@@ -32,18 +32,15 @@ void Chromosome::Mutation()
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dis(0, 1);
 
-	for (bool gene : m_x)
+	for (int index = 0; index < kDimension; ++index)
 	{
 		if (dis(gen) < kMutationProbability)
 		{
-			gene = !gene;
+			m_x[index] = !m_x[index];
 		}
-	}
-	for (bool gene : m_y)
-	{
 		if (dis(gen) < kMutationProbability)
 		{
-			gene = !gene;
+			m_y[index] = !m_y[index];
 		}
 	}
 }
@@ -52,7 +49,16 @@ void Chromosome::Fitness()
 {
 	const auto x = GetXPhenotype();
 	const auto y = GetYPhenotype();
-	const double result = 3 + abs(log(sin(x) * 5 + 3) + tan(y));
+
+	const double intermediateLogArg = sin(x) * 5 + 3;
+	const double intermediateTan = tan(y);
+
+	double result{ 0.0 };// a default value must be assigned to result
+
+	//if the intermediateLogArg and intermediateTan are good we assign the result
+	if (!(intermediateLogArg <= 0 || std::isinf(intermediateTan) || std::isnan(intermediateTan))) {
+		result = 3 + abs(log(intermediateLogArg) + intermediateTan);
+	}
 
 	m_fitness = result;
 }
@@ -69,12 +75,12 @@ std::vector<bool> Chromosome::GetY() const
 
 double Chromosome::GetXPhenotype() const
 {
-	return DecodeGene(m_x, true);
+	return DecodeGene(true);
 }
 
 double Chromosome::GetYPhenotype() const
 {
-	return DecodeGene(m_y, false);
+	return DecodeGene(false);
 }
 
 double Chromosome::GetFitness() const
@@ -85,11 +91,11 @@ double Chromosome::GetFitness() const
 std::string Chromosome::GetChromosome() 
 {
 	std::string result;
-	for (auto gene : m_x)
+	for (const auto& gene : m_x)
 	{
 		result += gene ? "1" : "0";
 	}
-	for (auto gene : m_y)
+	for (const auto gene : m_y)
 	{
 		result += gene ? "1" : "0";
 	}
@@ -113,19 +119,20 @@ bool Chromosome::operator<(const Chromosome& other) const
 
 bool Chromosome::operator==(const Chromosome& other) const
 {
-	return this->m_fitness == other.m_fitness &&
-		this->m_x == other.m_x &&
+	return this->m_x == other.m_x &&
 		this->m_y == other.m_y;
 }
 
-double Chromosome::DecodeGene(const std::vector<bool>& gene, bool isX) const
+double Chromosome::DecodeGene(const bool isX) const
 {
-	const auto v = GetV(gene);
 	if (isX)
 	{
-		return m_XleftBoundary + v * (m_XrightBoundary - m_XleftBoundary) / (pow(2, kDimension) - 1);
+		const auto v = GetV(m_x);
+		return m_xLeftBoundary + v * (m_xRightBoundary - m_xLeftBoundary) / (pow(2, kDimension) - 1);
 	}
-	return m_YleftBoundary + v * (m_YrightBoundary - m_YleftBoundary) / (pow(2, kDimension) - 1);
+
+	const auto v = GetV(m_y);
+	return m_yLeftBoundary + v * (m_yRightBoundary - m_yLeftBoundary) / (pow(2, kDimension) - 1);
 }
 
 int Chromosome::GetV(const std::vector<bool>& gene)

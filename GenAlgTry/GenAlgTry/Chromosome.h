@@ -10,8 +10,8 @@ public:
 
 public:
 	Chromosome() = default;
-	Chromosome(const double XleftBoundary, const double XrightBoundary, 
-		const double YleftBoundary, const double yrightBoundary);
+	Chromosome(const double xLeftBoundary, const double xRightBoundary, 
+		const double yLeftBoundary, const double yRightBoundary);
 
 	void Mutation();
 	std::vector<bool> GetX() const;
@@ -31,7 +31,7 @@ public:
 
 private:
 	void Fitness();
-	double DecodeGene(const std::vector<bool>& gene, bool isX) const;
+	double DecodeGene(bool isX) const;
 	static int GetV(const std::vector<bool>& gene);
 private:
 
@@ -39,9 +39,9 @@ private:
 	std::vector<bool> m_y;
 	double m_fitness;
 
-	double m_XleftBoundary;
-	double m_XrightBoundary;
-	double m_YleftBoundary;
-	double m_YrightBoundary;
+	double m_xLeftBoundary;
+	double m_xRightBoundary;
+	double m_yLeftBoundary;
+	double m_yRightBoundary;
 };
 
