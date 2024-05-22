@@ -12,7 +12,7 @@ Population::Population()
 	Selection();
 }
 
-Population::Population(const int startX, const int startY, const int endX, const int endY) :
+Population::Population(const double startX, const double startY, const double endX, const double endY) :
 	m_startX(startX)
 	, m_startY(startY)
 	, m_endX(endX)
@@ -40,7 +40,7 @@ void Population::Selection()
 		const double random = dis(gen);
 		const double random2 = dis(gen);
 
-		if (dis(gen) < kPC)
+		if (dis(gen) < kProbabilityChance)
 		{
 			auto firstIndividual = GetChromosomeByProbability(random);
 			auto secondIndividual = GetChromosomeByProbability(random2);
@@ -99,66 +99,24 @@ void Population::EraseIndividual(const Chromosome& individual)
 	}
 }
 
-std::vector<bool> Population::CombineGenes(const Chromosome& ch) // combine x and y genes into a single array
-{
-	std::vector<bool> gene = ch.GetX();
-	
-	for (auto i : ch.GetY())
-	{
-		gene.emplace_back(i);
-	}
-	
-	if (gene.size() != Chromosome::kDimension * 2)
-	{
-		throw std::runtime_error("The size of the gene is not equal to the dimension of the chromosome");
-	}
-
-	return gene;
-}
-
-std::pair<std::vector<bool>, std::vector<bool>> Population::SplitGene(const std::vector<bool>& gene) // split the gene back into x and y
-{
-	std::pair<std::vector<bool>, std::vector<bool>> genes;
-
-	// Alocăm spațiu pentru gene pentru a evita realocările multiple
-	genes.first.reserve(Chromosome::kDimension);
-	genes.second.reserve(gene.size() - Chromosome::kDimension);
-
-	// Adaugăm elementele la vectorul X
-	for (size_t i = 0; i < Chromosome::kDimension; ++i) {
-		genes.first.push_back(gene[i]);
-	}
-
-	// Adaugăm elementele la vectorul Y
-	for (size_t i = Chromosome::kDimension; i < gene.size(); ++i) {
-		genes.second.push_back(gene[i]);
-	}
-
-	if (genes.first.size() != Chromosome::kDimension || genes.second.size() != Chromosome::kDimension)
-	{
-		throw std::runtime_error("The size of the gene is not equal to the dimension of the chromosome");
-	}
-
-	return genes;
-}
 
 std::vector<std::pair<Chromosome, Chromosome>> Population::Crossover()
 {
 	std::vector<std::pair<Chromosome, Chromosome>> offsprings;
 
-	for (const auto& parents : m_selected)
+	for (const auto& [firstParent, secondParent] : m_selected)
 	{
-		std::vector<bool> firstParentGene = CombineGenes(parents.first);
-		std::vector<bool> secondParentGene = CombineGenes(parents.second);
+		std::vector<bool> firstParentGene = firstParent.GetGene();
+		std::vector<bool> secondParentGene = secondParent.GetGene();
 
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		if (parents.first.GetX().size() != Chromosome::kDimension)
+		if (firstParent.GetX().size() != Chromosome::kDimension)
 		{
 			throw std::runtime_error("The size of the gene is not equal to the dimension of the chromosome");
 		}
 
-		std::uniform_int_distribution<int> dis(1, parents.first.GetX().size() - 1); // doesn't choose the first or last position of the gene
+		std::uniform_int_distribution<int> dis(1, Chromosome::kDimension - 1); // doesn't choose the first or last position of the gene
 		int randIndex = dis(gen);
 
 		std::vector<bool> firstOffspringGene, secondOffspringGene;
@@ -179,20 +137,17 @@ std::vector<std::pair<Chromosome, Chromosome>> Population::Crossover()
 			}
 		}
 
-		Chromosome firstOffspring, secondOffSpring;
-		firstOffspring.SetX(SplitGene(firstOffspringGene).first);
-		firstOffspring.SetY(SplitGene(firstOffspringGene).second);
-		secondOffSpring.SetX(SplitGene(secondOffspringGene).first);
-		secondOffSpring.SetY(SplitGene(secondOffspringGene).second);
+		Chromosome firstOffspring = { m_startX, m_endX, m_startY, m_endY ,firstOffspringGene };
+		Chromosome secondOffSpring = { m_startX, m_endX, m_startY, m_endY ,secondOffspringGene };
 
-		offsprings.emplace_back(std::make_pair(firstOffspring, secondOffSpring));		
+		offsprings.emplace_back(firstOffspring, secondOffSpring);		
 	}
 	return offsprings;
 }
 
 void Population::Repopulate()
 {
-	auto offsprings = Crossover();	
+	const auto offsprings = Crossover();	
 	for (auto offspring : offsprings)
 	{
 		offspring.first.Mutation();
@@ -215,7 +170,7 @@ std::ostream& operator<<(std::ostream& os, const Population& p) {
 	os << "Population Coordinates: Start (" << p.m_startX << ", " << p.m_startY << ") End (" << p.m_endX << ", " << p.m_endY << ")\n";
 	os << "Chromosomes in Population:\n";
 	for (auto chromosome : p.m_population) {
-		os << chromosome.GetChromosome() << "\n";
+		os << chromosome.GetChromosome()<<" "<<chromosome.GetFitness() << "\n";
 	}
 	return os;
 }

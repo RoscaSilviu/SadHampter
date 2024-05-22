@@ -23,6 +23,18 @@ Chromosome::Chromosome(const double xLeftBoundary, const double xRightBoundary,
 	}
 
 	Fitness();
+}
+
+Chromosome::Chromosome(const double xLeftBoundary, const double xRightBoundary, const double yLeftBoundary,
+	const double yRightBoundary, const std::vector<bool>& genes):
+	m_xLeftBoundary{ xLeftBoundary }
+	, m_xRightBoundary{ xRightBoundary }
+	, m_yLeftBoundary{ yLeftBoundary }
+	, m_yRightBoundary{ yRightBoundary }
+{
+	const auto half = genes.size() / 2;
+	m_x = std::vector<bool>(genes.begin(), genes.begin() + half);
+	m_y = std::vector<bool>(genes.begin() + half, genes.end());
 	Fitness();
 }
 
@@ -86,6 +98,14 @@ double Chromosome::GetYPhenotype() const
 double Chromosome::GetFitness() const
 {
 	return m_fitness;
+}
+
+std::vector<bool> Chromosome::GetGene() const
+{
+	std::vector<bool> result;
+	result.insert(result.end(), m_x.begin(), m_x.end());
+	result.insert(result.end(), m_y.begin(), m_y.end());
+	return result;
 }
 
 std::string Chromosome::GetChromosome() 

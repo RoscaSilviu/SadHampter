@@ -12,14 +12,15 @@ public:
 	Chromosome() = default;
 	Chromosome(const double xLeftBoundary, const double xRightBoundary, 
 		const double yLeftBoundary, const double yRightBoundary);
-
+	Chromosome(const double xLeftBoundary, const double xRightBoundary,
+		const double yLeftBoundary, const double yRightBoundary, const std::vector<bool>& genes);
 	void Mutation();
 	std::vector<bool> GetX() const;
 	std::vector<bool> GetY() const;
 	double GetXPhenotype() const;
 	double GetYPhenotype() const;
 	double GetFitness() const;
-
+	std::vector<bool> GetGene() const;
 	std::string GetChromosome();
 
 	void SetX(const std::vector<bool>& x);

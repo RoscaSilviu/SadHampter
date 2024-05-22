@@ -7,17 +7,16 @@ class Population
 {
 public:
 	static constexpr int kPopulationDimension = 100;
-	static constexpr double kPC = 0.613;
+	static constexpr double kProbabilityChance = 0.613;
 public:
 	Population();
-	Population(const int startX, const int startY, const int endX, const int endY);
+	Population(const double startX, const double startY, const double endX, const double endY);
 
 	void Selection();
 	std::vector<std::pair<Chromosome, Chromosome>> Crossover(); // returns offsprings
 	void Repopulate();
 	void ShowPopulation() const;
 
-	//friend std::ostream& operator<<(std::ostream& os, const Population& p);
 	friend std::ostream& operator<<(std::ostream& os, const Population& p);
 
 
@@ -26,18 +25,18 @@ private:
 	Chromosome GetChromosomeByProbability(double probability) const;
 	void CalculateCumulativeProbability();
 	void EraseIndividual(const Chromosome& individual);
-	std::vector<bool> CombineGenes(const Chromosome& ch);
-	std::pair< std::vector<bool>,std::vector<bool>> SplitGene(const std::vector<bool>& gene);
-
+private:
+	double m_startX;
+	double m_startY;
+	double m_endX;
+	double m_endY;
+private:
 	std::vector<Chromosome> m_population;
 	std::vector<double> m_relativeFitness;
 	std::vector<std::pair<Chromosome, double>> m_cumulativeProbability;
 	std::vector<Chromosome> m_selectedPopulation;
 	std::vector<std::pair<Chromosome, Chromosome>> m_selected;
 
-	int m_startX;
-	int m_startY;
-	int m_endX;
-	int m_endY;
+	
 };
 
