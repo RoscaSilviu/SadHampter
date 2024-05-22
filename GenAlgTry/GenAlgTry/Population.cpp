@@ -1,4 +1,6 @@
 ﻿#include "Population.h"
+
+#include <format>
 #include <random>
 #include <iostream>
 
@@ -44,6 +46,15 @@ void Population::Selection()
 			EraseIndividual(secondIndividual);
 		}
 	}
+}
+
+std::string Population::GetBestIndividual()
+{
+    std::sort(m_population.begin(), m_population.end());
+	return std::format(
+		"Best Individual's Chromosome: {}\nValue: {} ", 
+		m_population[kPopulationDimension-1].GetChromosome(),
+		m_population[kPopulationDimension-1].GetFitness());
 }
 
 Chromosome Population::GetChromosomeByProbability(const double probability) const

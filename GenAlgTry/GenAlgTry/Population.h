@@ -18,7 +18,7 @@ public:
 	void Repopulate();
 
 	friend std::ostream& operator<<(std::ostream& os, const Population& p);
-
+	std::string GetBestIndividual();
 
 private:
 	//binary search on set

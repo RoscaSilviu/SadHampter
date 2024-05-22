@@ -1,5 +1,6 @@
 #include "Population.h"
 #include <fstream>
+#include <iostream>
 
 int main()
 {
@@ -15,6 +16,6 @@ int main()
 		out << population;
 		out << "\n";
 	}
-	// print biggest result;
+	out<<"\n"<<population.GetBestIndividual();
 	return 0;
 }
