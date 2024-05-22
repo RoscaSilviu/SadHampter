@@ -10,10 +10,11 @@ public:
 	static constexpr double kProbabilityChance = 0.613;
 public:
 
-	Population(const double startX, const double startY, const double endX, const double endY);
+	Population(const double startX, const double endX, const double startY, const double endY);
 
 	void Selection();
 	std::vector<std::pair<Chromosome, Chromosome>> Crossover(); // returns offsprings
+	void DeleteTheWeaklings(size_t size);
 	void Repopulate();
 
 	friend std::ostream& operator<<(std::ostream& os, const Population& p);

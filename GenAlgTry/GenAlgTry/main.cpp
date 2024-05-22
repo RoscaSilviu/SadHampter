@@ -5,7 +5,7 @@ int main()
 {
 	std::ofstream out("output.txt");
 
-	Population population(-5, 2, 3, 10);
+	Population population(-5, 3, 2, 10);
 	for (int i = 0; i < 20; ++i)
 	{
 		population.Selection();

@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-Population::Population(const double startX, const double startY, const double endX, const double endY) :
+Population::Population(const double startX, const double endX, const double startY, const double endY) :
 	m_startX(startX)
 	, m_startY(startY)
 	, m_endX(endX)
@@ -12,7 +12,7 @@ Population::Population(const double startX, const double startY, const double en
 
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
-		m_population.emplace_back(m_startX, m_endX, m_startY, m_endY);
+		m_population.push_back({m_startX, m_endX, m_startY, m_endY});
 	}
 }
 
@@ -132,9 +132,16 @@ std::vector<std::pair<Chromosome, Chromosome>> Population::Crossover()
 	return offsprings;
 }
 
+void Population::DeleteTheWeaklings(size_t size)
+{
+	std::sort(m_population.begin(), m_population.end());
+	m_population.erase(m_population.begin(), m_population.begin() + size);
+}
+
 void Population::Repopulate()
 {
-	const auto offsprings = Crossover();	
+	const auto offsprings = Crossover();
+	DeleteTheWeaklings(m_population.size()+offsprings.size()*2-kPopulationDimension);
 	for (auto offspring : offsprings)
 	{
 		offspring.first.Mutation();

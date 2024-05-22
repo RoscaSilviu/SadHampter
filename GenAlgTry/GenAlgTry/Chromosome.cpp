@@ -63,7 +63,7 @@ void Chromosome::Fitness()
 	const auto y = GetYPhenotype();
 
 	const double intermediateLogArg = sin(x) * 5 + 3;
-	const double intermediateTan = tan(y);
+	const double intermediateTan = std::tan(y);
 
 	double result{ 0.0 };// a default value must be assigned to result
 
@@ -71,7 +71,6 @@ void Chromosome::Fitness()
 	if (!(intermediateLogArg <= 0 || std::isinf(intermediateTan) || std::isnan(intermediateTan))) {
 		result = 3 + abs(log(intermediateLogArg) + intermediateTan);
 	}
-
 	m_fitness = result;
 }
 
