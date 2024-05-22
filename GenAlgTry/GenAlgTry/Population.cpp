@@ -2,15 +2,6 @@
 #include <random>
 #include <iostream>
 
-Population::Population()
-{
-	for (int i = 0; i < kPopulationDimension; ++i)
-	{
-		m_population.emplace_back(m_startX, m_endX, m_startY, m_endY);
-	}
-
-	Selection();
-}
 
 Population::Population(const double startX, const double startY, const double endX, const double endY) :
 	m_startX(startX)
@@ -18,18 +9,15 @@ Population::Population(const double startX, const double startY, const double en
 	, m_endX(endX)
 	, m_endY(endY)
 {
-	m_relativeFitness = std::vector<double>(kPopulationDimension);
 
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
 		m_population.emplace_back(m_startX, m_endX, m_startY, m_endY);
 	}
-	//Selection();
 }
 
 void Population::Selection()
 {
-	m_selectedPopulation.clear();
 	m_selected.clear();
 	CalculateCumulativeProbability();
 	for (int i = 0; i < kPopulationDimension / 2; ++i)
@@ -51,8 +39,6 @@ void Population::Selection()
 			}
 			
 			m_selected.emplace_back(firstIndividual, secondIndividual);
-			m_selectedPopulation.emplace_back(firstIndividual);
-			m_selectedPopulation.emplace_back(secondIndividual);
 
 			EraseIndividual(firstIndividual);
 			EraseIndividual(secondIndividual);
@@ -81,12 +67,13 @@ void Population::CalculateCumulativeProbability()
 	}
 
 	m_cumulativeProbability.clear();
-	
+
+
 	for (int i = 0; i < kPopulationDimension; ++i)
 	{
-		m_relativeFitness[i] = cumulativeProbability + m_population[i].GetFitness() / totalFitness;
-		m_cumulativeProbability.emplace_back(m_population[i], m_relativeFitness[i]);
-		cumulativeProbability += m_relativeFitness[i];
+		const auto relativeFitness = cumulativeProbability + m_population[i].GetFitness() / totalFitness;
+		m_cumulativeProbability.emplace_back(m_population[i], relativeFitness);
+		cumulativeProbability += relativeFitness;
 	}
 }
 
@@ -155,14 +142,6 @@ void Population::Repopulate()
 		m_population.push_back(offspring.first);
 		m_population.push_back(offspring.second);
 	}
-}
-
-void Population::ShowPopulation() const
-{/*
-	for (const auto& chromosome : m_population)
-	{
-		std::cout << chromosome.GetChromosome() << "X: " << chromosome.GetXPhenotype() << " Y: " << chromosome.GetYPhenotype() << " Fitness: " << chromosome.GetFitness() << std::endl;
-	}*/
 }
 
 std::ostream& operator<<(std::ostream& os, const Population& p) {
